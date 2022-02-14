@@ -57,6 +57,7 @@ use constant TB_SPLIT   => &Wx::NewId;
 use constant TB_CUT     => &Wx::NewId;
 use constant TB_LAYERS  => &Wx::NewId;
 use constant TB_SETTINGS => &Wx::NewId;
+use constant TB_ROBOT => &Wx::NewId;
 
 # package variables to avoid passing lexicals to threads
 our $THUMBNAIL_DONE_EVENT    : shared = Wx::NewEventType;
@@ -221,6 +222,7 @@ sub new {
         $self->{htoolbar}->AddSeparator;
         $self->{htoolbar}->AddTool(TB_SETTINGS, "Settings…", Wx::Bitmap->new($Slic3r::var->("cog.png"), wxBITMAP_TYPE_PNG), '');
         $self->{htoolbar}->AddTool(TB_LAYERS, "Layer heights…", Wx::Bitmap->new($Slic3r::var->("variable_layer_height.png"), wxBITMAP_TYPE_PNG), '');
+        $self->{htoolbar}->AddTool(TB_ROBOT, "Robot...", Wx::Bitmap->new($Slic3r::var->("robot.png"), wxBITMAP_TYPE_PNG), '');
     } else {
         my %tbar_buttons = (
             add             => "Add…",
@@ -243,6 +245,7 @@ sub new {
             cut             => "Cut…",
             layers          => "Layer heights…",
             settings        => "Settings…",
+            robot           => "Robot...",
         );
         my %tbar_buttonsToolTip = (
             add             => "Adds new Objects",
@@ -264,6 +267,7 @@ sub new {
             split           => "Split Object",
             cut             => "Cut Object",
             settings        => "Settings, Parts, Modifiers and Layers",
+            robot           => "Enable, Collision, Sequence, Advanced"
         );
         $self->{btoolbar} = Wx::BoxSizer->new(wxHORIZONTAL);
         
@@ -319,6 +323,7 @@ sub new {
             cut            => "package.png",
             layers         => "variable_layer_height.png",
             settings       => "cog.png",
+            robot          => "robot.png",
 
         );
         for (grep $self->{"btn_$_"}, keys %icons) {
@@ -367,6 +372,7 @@ sub new {
         EVT_TOOL($self, TB_CUT, sub { $_[0]->object_cut_dialog });
         EVT_TOOL($self, TB_LAYERS, sub { $_[0]->object_layers_dialog });
         EVT_TOOL($self, TB_SETTINGS, sub { $_[0]->object_settings_dialog });
+        EVT_TOOL($self, TB_ROBOT, sub { $_[0]->object_settings_dialog}); # Configure high-DoF system for collision free sequence
     } else {
         EVT_BUTTON($self, $self->{btn_add}, sub { $self->add; });
         EVT_BUTTON($self, $self->{btn_remove}, sub { $self->remove() }); # explicitly pass no argument to remove
@@ -395,6 +401,7 @@ sub new {
         EVT_BUTTON($self, $self->{btn_cut}, sub { $_[0]->object_cut_dialog });
         EVT_BUTTON($self, $self->{btn_layers}, sub { $_[0]->object_layers_dialog });
         EVT_BUTTON($self, $self->{btn_settings}, sub { $_[0]->object_settings_dialog });
+        EVT_BUTTON($self, $self->{btn_robot}, sub { $_[0]->object_settings_dialog });
     }
     
     $_->SetDropTarget(Slic3r::GUI::Plater::DropTarget->new($self))
@@ -3106,7 +3113,7 @@ sub selection_changed {
     
     if ($self->{htoolbar}) {
         $self->{htoolbar}->EnableTool($_, $have_sel)
-            for (TB_REMOVE, TB_MORE, TB_FEWER, TB_X90CW, TB_X90CCW, TB_Y90CW, TB_Y90CCW, TB_Z90CW, TB_Z90CCW, TB_45CW, TB_45CCW, TB_ROTFACE, TB_SCALE, TB_SPLIT, TB_CUT, TB_LAYERS, TB_SETTINGS);
+            for (TB_REMOVE, TB_MORE, TB_FEWER, TB_X90CW, TB_X90CCW, TB_Y90CW, TB_Y90CCW, TB_Z90CW, TB_Z90CCW, TB_45CW, TB_45CCW, TB_ROTFACE, TB_SCALE, TB_SPLIT, TB_CUT, TB_LAYERS, TB_SETTINGS, TB_ROBOT);
     }
     
     if ($self->{object_info_size}) { # have we already loaded the info pane?
@@ -3345,6 +3352,9 @@ sub object_menu {
     wxTheApp->append_menu_item($menu, "Settings…", 'Open the object editor dialog', sub {
         $self->object_settings_dialog;
     }, undef, 'cog.png');
+    wxTheApp->append_menu_item($menu, "Robot…", 'Open the high-DoF configurator', sub {
+        $self->object_settings_dialog;
+    }, undef, 'robot.png');
     $menu->AppendSeparator();
     wxTheApp->append_menu_item($menu, "Reload from Disk", 'Reload the selected file from Disk', sub {
         $self->reload_from_disk;

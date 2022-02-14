@@ -46,6 +46,8 @@ my %cli_options = ();
         'cut-grid=s'            => \$opt{cut_grid},
         'split'                 => \$opt{split},
         'info'                  => \$opt{info},
+
+        'robot'               => \$opt{robot},
         
         'scale=f'               => \$opt{scale},
         'rotate=f'              => \$opt{rotate},
@@ -152,6 +154,13 @@ if (@ARGV) {  # slicing from command line
             $tmesh->WriteOBJFile($output_file);
         }
         exit;
+    }
+
+    # Option for robot/high DoF configuration
+    if ($opt{robot}) {
+        foreach my $file (@ARGV) {
+            printf "Robot/high DoF configuration? tba yis\n"
+        }
     }
     
     if ($opt{cut}) {
@@ -580,6 +589,9 @@ $j
    Sequential printing options:
     --complete-objects  When printing multiple objects and/or copies, complete each one before
                         starting the next one; watch out for extruder collisions (default: no)
+    --complete-parts    When printing multiple parts of an object, complete each one before
+                        starting the next one; watch out for extruder collisions as typically parts
+                        interface with eachother (High DoF system recommended and possibly required) (default: no)
     --extruder-clearance-radius Radius in mm above which extruder won't collide with anything
                         (default: $config->{extruder_clearance_radius})
     --extruder-clearance-height Maximum vertical extruder depth; i.e. vertical distance from 
