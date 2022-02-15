@@ -318,6 +318,7 @@ int CLI::run(int argc, char **argv) {
                 // honored when printing (they will be only centered, unless --dont-arrange
                 // is supplied); if any object has no instances, it will get a default one
                 // and all instances will be rearranged (unless --dont-arrange is supplied).
+                cout << "in model export gcode";
                 SimplePrint print;
                 print.status_cb = [](int ln, const std::string& msg) {
                     boost::nowide::cout << msg << std::endl;

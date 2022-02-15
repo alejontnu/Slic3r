@@ -103,13 +103,19 @@ sub export_gcode {
     my $self = shift;
     my %params = @_;
     
+    printf "Inside export gcode\n";
+
     # prerequisites
     $self->process;
+
+    printf "After gcode process\n";
     
     # output everything to a G-code file
     my $output_file = $self->output_filepath($params{output_file} // '');
+    printf $output_file;
+    printf "\n";
     $self->status_cb->(90, "Exporting G-code" . ($output_file ? " to $output_file" : ""));
-    
+    printf "After export gcode\n";
     {
         # open output gcode file if we weren't supplied a file-handle
         my ($fh, $tempfile);
@@ -124,6 +130,8 @@ sub export_gcode {
             binmode $fh, ':utf8';
         }
 
+        printf $fh;
+        printf "\n";
         Slic3r::Print::GCode->new(
             print   => $self,
             fh      => $fh,

@@ -155,13 +155,6 @@ if (@ARGV) {  # slicing from command line
         }
         exit;
     }
-
-    # Option for robot/high DoF configuration
-    if ($opt{robot}) {
-        foreach my $file (@ARGV) {
-            printf "Robot/high DoF configuration? tba yis\n"
-        }
-    }
     
     if ($opt{cut}) {
         foreach my $file (@ARGV) {
@@ -243,30 +236,36 @@ if (@ARGV) {  # slicing from command line
         }
         exit;
     }
-    
+    printf "Starting command line export gcode thingy\n";
     while (my $input_file = shift @ARGV) {
+        printf "Finding file path\n";
         $input_file = Slic3r::decode_path($input_file);
         my $model;
         if ($opt{merge}) {
+            printf "Read and merge multiple models\n";
             my @models = map Slic3r::Model->read_from_file($_), $input_file, (splice @ARGV, 0);
             $model = Slic3r::Model->merge(@models);
         } else {
+            printf "Reading single model file\n";
             $model = Slic3r::Model->read_from_file($input_file);
         }
+        printf "Attempting repair of model\n";
         $model->repair;
-        
         if ($opt{info}) {
+            printf "Model information\n";
             $model->print_info;
             next;
         }
         
         if (defined $opt{duplicate_grid}) {
+            printf "Duplicating grid\n";
             $opt{duplicate_grid} = [ split /[,x]/, $opt{duplicate_grid}, 2 ];
         }
         if (defined $opt{print_center}) {
+            printf "Print center coordinate\n";
             $opt{print_center} = Slic3r::Pointf->new(split /[,x]/, $opt{print_center}, 2);
         }
-        
+        printf "Setup print settings?\n";
         my $sprint = Slic3r::Print::Simple->new(
             scale           => $opt{scale}          // 1,
             rotate          => deg2rad($opt{rotate} // 0),
@@ -282,17 +281,19 @@ if (@ARGV) {  # slicing from command line
             },
             output_file     => Slic3r::decode_path($opt{output}),
         );
-        
+        printf "Apply config and set model\n";
         $sprint->apply_config($config);
         $sprint->config->set('threads', $opt{threads}) if $opt{threads};
         $sprint->set_model($model);
         
         if ($opt{export_svg}) {
+            printf "Export svg\n";
             $sprint->export_svg;
         } else {
             my $t0 = [gettimeofday];
+            printf "Export G-code\n";
             $sprint->export_gcode;
-            
+            printf "Statistics\n";
             # output some statistics
             {
                 my $duration = tv_interval($t0);
@@ -637,6 +638,12 @@ $j
     --standby-temperature-delta
                         Temperature difference to be applied when an extruder is not active and
                         --ooze-prevention is enabled (default: $config->{standby_temperature_delta})
+
+   High Degree-of-Freedom system (!Experimental!)
+    --robot             Enable slicing for a high Degree-of-freedom AM system. Enables the following inputs as well (default: no)
+    --part-print-order  Manually specify Object Part print order (default: auto)
+    --hdof-bounding-box Define the collision bounding box for the toolhead/end-effector; for enabling collision free print sequence (default: )
+    --non-planar        Enable non-planar slicing; varying success (default: no)
     
 EOF
     exit ($exit_code || 0);

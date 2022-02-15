@@ -1264,6 +1264,7 @@ sub options {
         printer_settings_id
         printer_notes
         use_set_and_wait_bed use_set_and_wait_extruder
+        enable
     );
 }
 
@@ -1419,6 +1420,10 @@ sub build {
             $optgroup->append_single_option_line('use_set_and_wait_extruder');
             $optgroup->append_single_option_line('use_set_and_wait_bed');
             $optgroup->append_single_option_line('fan_percentage');
+        }
+        {
+            my $optgroup = $page->new_optgroup('High Degree-of-Freedom');
+            $optgroup->append_single_option_line('gcode_flavor');
         }
     }
     {

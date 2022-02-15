@@ -372,7 +372,7 @@ sub new {
         EVT_TOOL($self, TB_CUT, sub { $_[0]->object_cut_dialog });
         EVT_TOOL($self, TB_LAYERS, sub { $_[0]->object_layers_dialog });
         EVT_TOOL($self, TB_SETTINGS, sub { $_[0]->object_settings_dialog });
-        EVT_TOOL($self, TB_ROBOT, sub { $_[0]->object_settings_dialog}); # Configure high-DoF system for collision free sequence
+        EVT_TOOL($self, TB_ROBOT, sub { $_[0]->object_robot_dialog}); # Configure high-DoF system for collision free sequence
     } else {
         EVT_BUTTON($self, $self->{btn_add}, sub { $self->add; });
         EVT_BUTTON($self, $self->{btn_remove}, sub { $self->remove() }); # explicitly pass no argument to remove
@@ -401,7 +401,7 @@ sub new {
         EVT_BUTTON($self, $self->{btn_cut}, sub { $_[0]->object_cut_dialog });
         EVT_BUTTON($self, $self->{btn_layers}, sub { $_[0]->object_layers_dialog });
         EVT_BUTTON($self, $self->{btn_settings}, sub { $_[0]->object_settings_dialog });
-        EVT_BUTTON($self, $self->{btn_robot}, sub { $_[0]->object_settings_dialog });
+        EVT_BUTTON($self, $self->{btn_robot}, sub { $_[0]->object_robot_dialog });
     }
     
     $_->SetDropTarget(Slic3r::GUI::Plater::DropTarget->new($self))
@@ -3024,6 +3024,15 @@ sub object_layers_dialog {
     $self->object_settings_dialog($obj_idx, adaptive_layers => 1);
 }
 
+sub object_robot_dialog {
+    my $self = shift;
+    my($obj_idx) = @_;
+
+    printf "Robot settings\n"
+
+    #$self->object_settings_dialog(@obj_idx, robot_config => 1);
+}
+
 sub object_settings_dialog {
     my $self = shift;
     my ($obj_idx, %params) = @_;
@@ -3353,7 +3362,7 @@ sub object_menu {
         $self->object_settings_dialog;
     }, undef, 'cog.png');
     wxTheApp->append_menu_item($menu, "Robot…", 'Open the high-DoF configurator', sub {
-        $self->object_settings_dialog;
+        $self->object_robot_dialog;
     }, undef, 'robot.png');
     $menu->AppendSeparator();
     wxTheApp->append_menu_item($menu, "Reload from Disk", 'Reload the selected file from Disk', sub {
