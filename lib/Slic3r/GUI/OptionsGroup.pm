@@ -369,7 +369,6 @@ sub get_option {
     my ($self, $opt_key, $opt_index, %params) = @_;
     
     $opt_index //= -1;
-    
     if (!$self->config->has($opt_key)) {
         die "No $opt_key in ConfigOptionsGroup config";
     }

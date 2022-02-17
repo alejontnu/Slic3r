@@ -28,7 +28,7 @@ $Options->{threads}{readonly} = !$Slic3r::have_threads;
 sub new_from_defaults {
     my $class = shift;
     my (@opt_keys) = @_;
-    
+
     my $self = $class->new;
     if (@opt_keys) {
         $self->set($_, $Options->{$_}{default})

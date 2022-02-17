@@ -228,7 +228,8 @@ public:
             "retract_length_toolchange"s, "retract_restart_extra_toolchange"s, "retract_lift_above"s, "retract_lift_below"s,
             "printer_settings_id"s,
             "printer_notes"s,
-            "use_set_and_wait_bed"s, "use_set_and_wait_extruder"s
+            "use_set_and_wait_bed"s, "use_set_and_wait_extruder"s,
+            "enable_hdof"s
         };
     }
     

@@ -726,6 +726,14 @@ sub build {
                 $line->append_option($option);
             }
             $optgroup->append_line($line);
+            my $option = Slic3r::GUI::OptionsGroup::Option->new(
+                    opt_id      => 'enable_part_sequence',
+                    type        => 'bool',
+                    default     => 0,
+                    label       => 'Complete individual parts',
+                    tooltip     => 'Enable sequential printing of Object parts.',
+                );
+                $optgroup->append_single_option_line($option);
         }
         {
             my $optgroup = $page->new_optgroup('Output file');
@@ -1264,7 +1272,7 @@ sub options {
         printer_settings_id
         printer_notes
         use_set_and_wait_bed use_set_and_wait_extruder
-        enable
+        enable_hdof
     );
 }
 
@@ -1423,7 +1431,33 @@ sub build {
         }
         {
             my $optgroup = $page->new_optgroup('High Degree-of-Freedom');
-            $optgroup->append_single_option_line('gcode_flavor');
+            my $option = Slic3r::GUI::OptionsGroup::Option->new(
+                    opt_id      => 'enable_hdof',
+                    type        => 'bool',
+                    default     => 0,
+                    label       => 'Enable',
+                    tooltip     => 'Enable a printer with higher degrees-of-freedom. (default: no)',
+                );
+                $optgroup->append_single_option_line($option);
+
+            my $orientation = Slic3r::GUI::OptionsGroup::Option->new(
+                    opt_id      => 'use_6_dof',
+                    type        => 'bool',
+                    default     => 0,
+                    sidetext    => 'Using this option will include 3 angles for tool-head orientation. X Y Z a=0 b=0 c=0',
+                    label       => 'Use orientation',
+                    tooltip     => 'Enable orientation of tool-head in G-code output. (default: no)',
+                );
+                $optgroup->append_single_option_line($orientation);
+            
+            my $collision = Slic3r::GUI::OptionsGroup::Option->new(
+                    opt_id      => 'tool_bounding_box',
+                    type        => 's',
+                    default     => '',
+                    label       => 'Tool-head collision box',
+                    tooltip     => 'Collision box for the tool-head.',
+                );
+                $optgroup->append_single_option_line($collision); 
         }
     }
     {
