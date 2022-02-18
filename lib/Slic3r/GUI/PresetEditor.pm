@@ -1444,8 +1444,8 @@ sub build {
                     opt_id      => 'use_6_dof',
                     type        => 'bool',
                     default     => 0,
-                    sidetext    => 'Using this option will include 3 angles for tool-head orientation. X Y Z a=0 b=0 c=0',
                     label       => 'Use orientation',
+                    sidetext    => 'Using this option will include 3 angles for tool-head orientation. a=0 b=0 c=0',
                     tooltip     => 'Enable orientation of tool-head in G-code output. (default: no)',
                 );
                 $optgroup->append_single_option_line($orientation);
@@ -1455,7 +1455,12 @@ sub build {
                     type        => 's',
                     default     => '',
                     label       => 'Tool-head collision box',
+                    sidetext    => 'File format? Obj, udrf?',
                     tooltip     => 'Collision box for the tool-head.',
+                    widget      => sub {
+                    my ($parent) = @_;
+                    return $self->{description_line} = Slic3r::GUI::OptionsGroup::StaticText->new($parent);
+                    },
                 );
                 $optgroup->append_single_option_line($collision); 
         }

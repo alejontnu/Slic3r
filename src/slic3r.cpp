@@ -262,9 +262,6 @@ int CLI::run(int argc, char **argv) {
         } else if (opt_key == "repair") {
             for (auto &model : this->models)
                 model.repair();
-        } else if (opt_key == "sequence") {
-            for (auto &model : this->models)
-                model.sequence();
         } else {
 	    Slic3r::Log::error("CLI") << " option not implemented yet: " << opt_key << std::endl;
 	    exit(EXIT_FAILURE);
